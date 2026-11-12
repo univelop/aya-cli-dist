@@ -47,8 +47,7 @@ case "$OS/$ARCH" in
   Linux/x86_64 | Linux/amd64) TARGET="linux-x64" ;;
   Linux/aarch64 | Linux/arm64) TARGET="linux-arm64" ;;
   *)
-    fail "no prebuilt aya for $OS/$ARCH. With Node >= 20 installed, use the JS package instead:
-  npm install -g $REPO_URL/releases/latest/download/univelop-aya-cli.tgz" ;;
+    fail "no prebuilt aya for $OS/$ARCH. Supported: macOS on Apple Silicon, Linux on x86-64 and arm64." ;;
 esac
 
 if [ -n "$VERSION" ]; then

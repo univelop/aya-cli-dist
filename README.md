@@ -1,85 +1,101 @@
-# Aya CLI — Distribution
+# Aya CLI — Downloads
 
-Public download location for **`@univelop/aya-cli`**, the command-line interface for
-the Aya workspace and record management platform.
+Public download location for **`aya`**, the command-line interface for the Aya
+workspace and record management platform.
 
-This repository contains **no source code**. It exists only to host release
-tarballs so that anyone can install the CLI without a GitHub token or npm
-registry credentials. The source lives in the private monorepo
-[`univelop/aya`](https://github.com/univelop/aya) under `apps/cli`.
+This repository contains **no source code**. It only hosts the release
+downloads, so that anyone can install the CLI without a GitHub token or npm
+registry credentials. Every release is built from the private monorepo
+`univelop/aya`; its notes name the commit it was built from.
 
 ## Install
 
-Requires **Node.js >= 20**.
+### macOS (Apple Silicon) and Linux (x86-64, arm64)
 
-Always the latest release:
-
-```bash
-npm install -g https://github.com/univelop/aya-cli-dist/releases/latest/download/univelop-aya-cli.tgz
-```
-
-Pinned to a specific version (recommended for CI):
+One self-contained executable — no Node.js needed:
 
 ```bash
-npm install -g https://github.com/univelop/aya-cli-dist/releases/download/v0.1.0/univelop-aya-cli-0.1.0.tgz
+curl -fsSL https://github.com/univelop/aya-cli-dist/releases/latest/download/install.sh | sh
 ```
 
-`pnpm add -g <url>` works the same way. See
-[Releases](https://github.com/univelop/aya-cli-dist/releases) for the available
-versions.
-
-Verify the install:
+It picks the executable for your machine, puts it in `/usr/local/bin` when that
+is writable (else `~/.local/bin`) and checks that it runs. Options:
 
 ```bash
-aya --help
+# a specific version
+curl -fsSL https://github.com/univelop/aya-cli-dist/releases/latest/download/install.sh | AYA_VERSION=0.1.84 sh
+# another directory
+curl -fsSL https://github.com/univelop/aya-cli-dist/releases/latest/download/install.sh | sh -s -- --dir ~/bin
 ```
+
+### Updating
+
+```bash
+aya upgrade            # the latest release
+aya upgrade 0.1.84     # a specific version
+```
+
+`aya upgrade` replaces the executable in place. Re-running the installer does the same.
+
+**Installed with `npm install -g` before?** The npm variant is discontinued.
+Install the executable as above, then remove the old one with
+`npm uninstall -g @univelop/aya-cli`.
 
 ## Getting started
 
 ```bash
-aya login                          # interactive login
-aya login --token <aya_pat_…>      # or authenticate with a personal access token
-aya org list                       # confirm access
-aya workspace clone <slugOrId>     # pull a workspace into the current directory
+aya --version
+AYA_SERVER=https://api.hey-aya.ai aya login   # sign in in the browser
+aya org list                                  # confirm access
+aya workspace clone <slugOrId>                # a workspace into the current directory
 ```
 
-For headless / CI use, set `AYA_API_KEY` instead of running `aya login`; it
-accepts both user-scoped PATs (`aya_pat_…`) and org-scoped API keys
-(`aya_key_…`). Run `aya --help` or `aya <command> --help` for the full command
-surface, and `aya completion <bash|zsh|fish|powershell|nushell>` to install
-shell completions.
+To keep the server without the variable, pin it once:
+`aya org use <org> --server https://api.hey-aya.ai`.
+
+Run `aya --help` or `aya <command> --help` for the full command surface, and
+`aya completion <bash|zsh|fish|powershell|nushell>` for shell completions.
+
+### Headless use (CI, agents)
+
+| Variable | Meaning |
+| --- | --- |
+| `AYA_API_KEY` | An API key (`aya_key_…`), used instead of `aya login`. |
+| `AYA_SERVER` | The Aya API, e.g. `https://api.hey-aya.ai`. |
+| `AYA_ORG` | The organization to work in (id or slug). |
+
+`aya login --token -` reads a key from standard input instead of the command
+line.
+
+### Where the CLI keeps its login
+
+| Platform | `credentials.json` |
+| --- | --- |
+| macOS | `~/.config/aya/` |
+| Linux | `~/.config/aya/` |
+
+`aya status` shows the path in use; `aya logout` removes the file.
 
 ## Release assets
 
-Every release carries two assets:
-
-| Asset | Purpose |
+| Asset | What it is |
 | --- | --- |
-| `univelop-aya-cli-<X.Y.Z>.tgz` | The versioned tarball — use this to pin. |
-| `univelop-aya-cli.tgz` | An unversioned copy, so `releases/latest/download/univelop-aya-cli.tgz` is a stable URL. |
+| `install.sh` | The installer for macOS and Linux. |
+| `aya-<platform>` | The executable alone, e.g. `aya-darwin-arm64`, `aya-linux-x64`. |
+| `univelop-aya-cli-<platform>-<X.Y.Z>.tgz` | The macOS / Linux executable wrapped as an npm package, for environments that install packages by URL (npm refuses it on other platforms). |
 
-Each release's notes record the `univelop/aya` commit it was built from.
+Every asset without a version in its name is also reachable at
+`https://github.com/univelop/aya-cli-dist/releases/latest/download/<asset>`.
+Files with a version have an unversioned twin for that URL (e.g.
+`univelop-aya-cli-linux-x64.tgz`).
 
-## How releases get here
-
-Releases are published automatically by the `release-cli` GitHub Actions
-workflow in `univelop/aya` when a `cli-v*` tag is pushed. Maintainers cut a
-release from the monorepo, not from this repository:
-
-```bash
-git tag cli-v0.1.0
-git push origin cli-v0.1.0
-```
-
-The workflow stamps the version from the tag, packs the CLI, and uploads both
-assets as a release here.
+Releases are published by a workflow in the source repository, never by hand.
 
 ## Issues
 
-Please report bugs and feature requests against the source repository,
-[`univelop/aya`](https://github.com/univelop/aya/issues) — this repository does
-not track issues.
+This repository does not track issues. Customers: please contact Univelop
+support.
 
 ## License
 
-UNLICENSED — © univelop. All rights reserved.
+UNLICENSED — © Univelop. All rights reserved.
