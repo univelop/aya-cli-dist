@@ -62,7 +62,7 @@ log. Uninstall headless with
 ### Updating
 
 ```bash
-aya upgrade            # the latest release
+aya upgrade            # the release your Aya server runs with (else the latest)
 aya upgrade 0.1.84     # a specific version
 ```
 
